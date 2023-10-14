@@ -3,9 +3,9 @@ package me.chanwookim.apicalldemo
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.*
 import org.springframework.web.client.RestTemplate
 
 @RestController
@@ -26,5 +26,14 @@ class ChatController(
         val request = ChatRequest(model, prompt)
         val response = restTemplate.postForObject(apiUrl, request, ChatResponse::class.java)
         return response?.choices?.get(0)?.message?.content ?: "No response"
+    }
+
+}
+
+@RestControllerAdvice
+class GlobalExceptionHandler {
+    @ExceptionHandler(Exception::class)
+    fun handleException(e: Exception): ResponseEntity<String> {
+        return ResponseEntity(e.message, HttpStatus.INTERNAL_SERVER_ERROR)
     }
 }
